@@ -177,6 +177,7 @@ class ParsedBase
     spacing = "--" * current_scope.parent_depth
 
     position = `tput cols`.to_i / 3
+    return if message.include? "handling :space"
     puts "#{current_scope.print_name(position)} --#{spacing}#{message}"
   end
 
