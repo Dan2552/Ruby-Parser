@@ -134,16 +134,33 @@ class ParsedBase
     end
   end
 
-  def token_handler(token)
+  def comment_handler(token)
     [
-      { space: ->{}, optional: true }
+      {
+        hash: -> { new_scope(ParsedComment) },
+        optional: true
+      }
+    ]
+  end
+
+  def token_handler(token)
+    comment_handler(token) + [
+      {
+        space: ->{},
+        optional: true
+      }
     ]
   end
 
   def handle_instruction(token, hash)
-    # unless hash.is_a? Hash
-    #   hash = { hash => ->{} }
-    # end
+    if hash.keys.include? :all
+      if hash[:except] == token_type(token)
+        return "anything_but_#{token_type(token)}"
+      end
+      hash[:all].call
+      return true
+    end
+
     hash.each do |k, v|
       next if [:once, :optional, :if, :unless].include? k
       if token_type(token) == k
@@ -181,6 +198,8 @@ class ParsedBase
       :pipe
     when ","
       :delimiter
+    when "#"
+      :hash
     else
       return token.to_sym if KEYWORDS.include? token
       :word

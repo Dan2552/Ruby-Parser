@@ -27,7 +27,7 @@ class ParsedCall < ParsedBase
   end
 
   def token_handler(token)
-    [
+    comment_handler(token) + [
       { #name
         once: true,
         word: ->{ self.name = token }

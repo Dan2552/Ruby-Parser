@@ -16,7 +16,7 @@ def test name
   puts "#{"  " * @print_level}#{name}"
 end
 
-def assert_equal expect, value
+def assert_equal value, expect
   unless expect == value
     raise "FailedAssertion: #{expect} expected, got #{value}"
   end
@@ -28,7 +28,9 @@ end
 
 string = <<-eof
   class MyClass
-    attr_accessor :banana
+    # comment
+    attr_accessor(:bananas, :apples) #comment after line
+    attr_reader :oranges
 
     def basic_method
       my_method(arg1, arg2)
@@ -60,9 +62,11 @@ describe "class" do
   assert_equal(myClass.name, "MyClass")
 
   test "calls"
-  assert_equal(myClass.calls.count, 1)
-  assert_equal(myClass.calls.first.name, "attr_accessor")
-  assert_equal(myClass.calls.first.arguments.count, 1)
+  assert_equal(myClass.calls.count, 2)
+  assert_equal(myClass.calls[0].name, "attr_accessor")
+  assert_equal(myClass.calls[0].arguments.count, 2)
+  assert_equal(myClass.calls[1].name, "attr_reader")
+  assert_equal(myClass.calls[1].arguments.count, 1)
 
   test "methods"
   assert_equal(myClass.defined_methods.count, 2)
@@ -93,7 +97,7 @@ describe "class" do
     test "with params"
     block_method_with_params = blocks.calls[1]
     assert_equal(block_method_with_params.name, "block_method_with_params")
-    assert_equal(block_method_with_params.arguments.count, 0)
+    assert_equal(block_method_with_params.arguments, [])
     assert_equal(block_method_with_params.block.calls.count, 1)
     assert_equal(block_method_with_params.block.calls.first.name, "block_contents")
     assert_equal(block_method_with_params.block.arguments, ["p1", "p2"])
