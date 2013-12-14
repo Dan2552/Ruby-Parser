@@ -1,8 +1,8 @@
 class ParsedCall < ParsedBase
-  children :arguments
+  children :arguments, :blocks
 
-  def states
-    @states ||= []
+  def block
+    blocks.first
   end
 
   def expect_close_paren?
@@ -57,6 +57,15 @@ class ParsedCall < ParsedBase
       }, { # )
         if: :expect_close_paren?,
         close_paren: -> { states << token }
+      }, { # { block open
+        optional: true,
+        open_curley: -> { new_scope(ParsedBlock, blocks) }
+      }, { # do block open
+        optional: true,
+        do: -> { new_scope(ParsedBlock, blocks) }
+      }, { # } block close
+        optional: true,
+        close_curley: -> { close_scope.handle(token) }
       }, {
         break: ->{ close_scope.handle(token) }
       }

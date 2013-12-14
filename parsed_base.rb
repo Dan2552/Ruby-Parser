@@ -3,6 +3,51 @@ class ParsedBase
   attr_accessor :name
   attr_reader :parent
 
+  KEYWORDS = [
+    "BEGIN",
+    "END",
+    "__ENCODING__",
+    "__END__",
+    "__FILE__",
+    "__LINE__",
+    "alias",
+    "and",
+    "begin",
+    "break",
+    "case",
+    "class",
+    "def",
+    "defined?",
+    "do",
+    "else",
+    "elsif",
+    "end",
+    "ensure",
+    "false",
+    "for",
+    "if",
+    "in",
+    "module",
+    "next",
+    "nil",
+    "not",
+    "or",
+    "redo",
+    "rescue",
+    "retry",
+    "return",
+    "self",
+    "super",
+    "then",
+    "true",
+    "undef",
+    "unless",
+    "until",
+    "when",
+    "while",
+    "yield"
+  ]
+
   def initialize(parent)
     raise "#{self.class} requires a parent" unless parent
     @parent = parent
@@ -128,11 +173,16 @@ class ParsedBase
       :open_paren
     when ")"
       :close_paren
-    when "end", "def", "class", "module"
-      token.to_sym
+    when "{"
+      :open_curley
+    when "}"
+      :close_curley
+    when "|"
+      :pipe
     when ","
       :delimiter
     else
+      return token.to_sym if KEYWORDS.include? token
       :word
     end
   end
@@ -152,20 +202,8 @@ class ParsedBase
     end
   end
 
-  # #STATES
-  # @@states = []
-
-  # def self.states *args
-  #   args.each { |a| @@states << a }
-  # end
-
-  # def state
-  #   @state ||= 0
-  #   @@states[@state]
-  # end
-
-  # def next_state
-  #   @state += 1
-  # end
+  def states
+    @states ||= []
+  end
 
 end
