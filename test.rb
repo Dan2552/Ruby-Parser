@@ -53,18 +53,23 @@ string = <<-eof
         block_contents2
       end
     end
+  end
 
+  module MyModule
+    class ModuleClass; end
+    module ChildModule; end
+    module_call(arg1)
   end
 eof
 
 
 @file = ParsedFile.new(string)
-assert_equal(file.modules, [])
-assert_equal(file.classes.count, 1)
 
 describe "class" do
-  test "name"
+  assert_equal(file.classes.count, 1)
   myClass = file.classes.first
+
+  test "name"
   assert_equal(myClass.name, "MyClass")
 
   describe "calls" do
@@ -142,6 +147,27 @@ describe "class" do
     assert_equal(block_method_do.block.calls.first.name, "block_contents1")
     assert_equal(block_method_do.block.calls.last.name, "block_contents2")
   end
+end
+
+describe "module" do
+  assert_equal(file.modules.count, 1)
+  myModule = file.modules.first
+
+  test "name"
+  assert_equal(myModule.name, "MyModule")
+
+  test "child module"
+  assert_equal(myModule.modules.count, 1)
+  assert_equal(myModule.modules[0].name, "ChildModule")
+
+  test "child class"
+  assert_equal(myModule.classes.count, 1)
+  assert_equal(myModule.classes[0].name, "ModuleClass")
+
+  test "calls"
+  assert_equal(myModule.calls.count, 1)
+  assert_equal(myModule.calls[0].name, "module_call")
+  assert_equal(myModule.calls[0].arguments[0].name, "arg1")
 end
 
 puts "Success!"

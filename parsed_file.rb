@@ -11,7 +11,7 @@ class ParsedFile < ParsedBase
     @current_token = ""
     str.each_char do |c|
       case c
-      when ' ', "\n", '(', ')', ',', '|', "#"
+      when ' ', "\n", '(', ')', ',', '|', "#", ";"
         send_token_to_scope
         send_token_to_scope(c)
       else
