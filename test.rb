@@ -29,8 +29,14 @@ end
 string = <<-eof
   class MyClass
     # comment
-    attr_accessor(:bananas, :apples) #comment after line
     attr_reader :oranges
+    attr_accessor :bananas, #comment after line
+                  :apples
+    multiline_bracket(
+      :apples,
+      :bananas,
+      :oranges
+    )
 
     def basic_method
       my_method(arg1, arg2)
@@ -61,12 +67,29 @@ describe "class" do
   myClass = file.classes.first
   assert_equal(myClass.name, "MyClass")
 
-  test "calls"
-  assert_equal(myClass.calls.count, 2)
-  assert_equal(myClass.calls[0].name, "attr_accessor")
-  assert_equal(myClass.calls[0].arguments.count, 2)
-  assert_equal(myClass.calls[1].name, "attr_reader")
-  assert_equal(myClass.calls[1].arguments.count, 1)
+  describe "calls" do
+    assert_equal(myClass.calls.count, 3)
+
+    test "simple"
+    assert_equal(myClass.calls[0].name, "attr_reader")
+    assert_equal(myClass.calls[0].arguments.count, 1)
+    assert_equal(myClass.calls[0].arguments[0].name, ":oranges")
+
+    test "multiline"
+    assert_equal(myClass.calls[1].name, "attr_accessor")
+    assert_equal(myClass.calls[1].arguments.count, 2)
+    assert_equal(myClass.calls[1].arguments[0].name, ":bananas")
+    assert_equal(myClass.calls[1].arguments[1].name, ":apples")
+
+    test "multiline brackets"
+    assert_equal(myClass.calls[2].name, "multiline_bracket")
+    assert_equal(myClass.calls[2].arguments.count, 3)
+    assert_equal(myClass.calls[2].arguments[0].name, ":apples")
+    assert_equal(myClass.calls[2].arguments[1].name, ":bananas")
+    assert_equal(myClass.calls[2].arguments[2].name, ":oranges")
+
+  end
+
 
   test "methods"
   assert_equal(myClass.defined_methods.count, 2)

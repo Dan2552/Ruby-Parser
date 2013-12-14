@@ -26,6 +26,11 @@ class ParsedCall < ParsedBase
     states.include? " "
   end
 
+  def open_for_multiline?
+    (arguments.count > 0 && expect_argument?) ||
+      expect_close_paren?
+  end
+
   def token_handler(token)
     comment_handler(token) + [
       { #name
@@ -42,15 +47,9 @@ class ParsedCall < ParsedBase
         once: true,
         optional: true,
         delimiter: ->{ close_scope.handle(token) }
-      }, { #argument
-        optional: true,
-        if: :expect_argument?,
-        word: ->{ new_scope(ParsedCall, arguments).handle(token) }
-      }, { #comma after argument
-        optional: true,
-        if: :expect_delimiter?,
-        delimiter: ->{ states << token }
-      }, { #if we don't expect a ) but get one
+      }
+    ] + argument_handler(token) + [
+      { #if we don't expect a ) but get one
         unless: :expect_close_paren?,
         optional: true,
         close_paren: ->{ close_scope.handle(token) }
@@ -68,6 +67,24 @@ class ParsedCall < ParsedBase
         close_curley: -> { close_scope.handle(token) }
       }, {
         break: ->{ close_scope.handle(token) }
+      }
+    ]
+  end
+
+  def argument_handler(token)
+    [
+      {
+        optional: true,
+        if: :open_for_multiline?,
+        break: -> { }
+      }, { #argument
+        optional: true,
+        if: :expect_argument?,
+        word: ->{ new_scope(ParsedCall, arguments).handle(token) }
+      }, { #comma after argument
+        optional: true,
+        if: :expect_delimiter?,
+        delimiter: ->{ states << token }
       }
     ]
   end
