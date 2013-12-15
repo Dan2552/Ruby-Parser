@@ -181,26 +181,30 @@ class ParsedBase
     puts "#{current_scope.print_name(position)} --#{spacing}#{message}"
   end
 
+  def named_tokens
+    {
+      ' '  => :space,
+      "\n" => :break,
+      ';'  => :break,
+      '('  => :open_paren,
+      ')'  => :close_paren,
+      '{'  => :open_curley,
+      '}'  => :close_curley,
+      '|'  => :pipe,
+      ','  => :delimiter,
+      '#'  => :hash,
+      '.'  => :dot,
+      '='  => :equal,
+      '+'  => :plus,
+      '/'  => :forward_slash,
+      '-'  => :dash,
+      '%'  => :percent
+    }
+  end
+
   def token_type(token)
-    case token
-    when "\n", ";"
-      :break
-    when " "
-      :space
-    when "("
-      :open_paren
-    when ")"
-      :close_paren
-    when "{"
-      :open_curley
-    when "}"
-      :close_curley
-    when "|"
-      :pipe
-    when ","
-      :delimiter
-    when "#"
-      :hash
+    if named_tokens.keys.include? token
+      return named_tokens[token]
     else
       return token.to_sym if KEYWORDS.include? token
       :word

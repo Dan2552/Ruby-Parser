@@ -27,6 +27,22 @@ def file
 end
 
 string = <<-eof
+  #TODO:
+  #
+  #conditions
+  #if
+  #else
+  #elsif
+  #
+  #subclasses
+
+  chain(arg1).chained(arg2)
+  assignment = assignee
+  1+2
+  2/3
+  5-4
+  6%7
+
   class MyClass
     # comment
     attr_reader :oranges
@@ -52,6 +68,7 @@ string = <<-eof
         block_contents1
         block_contents2
       end
+      block_ception { inside_block(inside_arg1) { double_inside_block } }
     end
   end
 
@@ -64,6 +81,39 @@ eof
 
 
 @file = ParsedFile.new(string)
+
+describe "calls" do
+  test "chaining"
+  assert_equal(file.calls[0].name, "chain")
+  assert_equal(file.calls[0].chain.name, "chained")
+
+  describe "special chains" do
+    test "assignment"
+    assert_equal(file.calls[1].name, "assignment")
+    assert_equal(file.calls[1].chain.name, "=")
+    assert_equal(file.calls[1].chain.arguments.first.name, "assignee")
+
+    test "addition"
+    assert_equal(file.calls[2].name, "1")
+    assert_equal(file.calls[2].chain.name, "+")
+    assert_equal(file.calls[2].chain.arguments.first.name, "2")
+
+    test "division"
+    assert_equal(file.calls[3].name, "2")
+    assert_equal(file.calls[3].chain.name, "/")
+    assert_equal(file.calls[3].chain.arguments.first.name, "3")
+
+    test "subtraction"
+    assert_equal(file.calls[4].name, "5")
+    assert_equal(file.calls[4].chain.name, "-")
+    assert_equal(file.calls[4].chain.arguments.first.name, "4")
+
+    test "modular"
+    assert_equal(file.calls[5].name, "6")
+    assert_equal(file.calls[5].chain.name, "%")
+    assert_equal(file.calls[5].chain.arguments.first.name, "7")
+  end
+end
 
 describe "class" do
   assert_equal(file.classes.count, 1)
@@ -146,6 +196,12 @@ describe "class" do
     assert_equal(block_method_do.block.calls.count, 2)
     assert_equal(block_method_do.block.calls.first.name, "block_contents1")
     assert_equal(block_method_do.block.calls.last.name, "block_contents2")
+
+    test "blockception"
+    block_ception = blocks.calls[4]
+    assert_equal(block_ception.name, "block_ception")
+    assert_equal(block_ception.block.calls.first.name, "inside_block")
+    assert_equal(block_ception.block.calls.first.block.calls.first.name, "double_inside_block")
   end
 end
 

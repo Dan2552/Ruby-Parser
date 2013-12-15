@@ -10,8 +10,7 @@ class ParsedFile < ParsedBase
   def parse_string str
     @current_token = ""
     str.each_char do |c|
-      case c
-      when ' ', "\n", '(', ')', ',', '|', "#", ";"
+      if named_tokens.keys.include? c
         send_token_to_scope
         send_token_to_scope(c)
       else

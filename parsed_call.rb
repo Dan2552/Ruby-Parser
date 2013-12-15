@@ -1,5 +1,9 @@
 class ParsedCall < ParsedBase
-  children :arguments, :blocks
+  children :arguments, :blocks, :chains
+
+  def chain
+    chains.first
+  end
 
   def block
     blocks.first
@@ -35,7 +39,7 @@ class ParsedCall < ParsedBase
     comment_handler(token) + [
       { #name
         once: true,
-        word: ->{ self.name = token }
+        all: ->{ self.name = token }
       }, { # ( before args
         unless: :leading_spaces?,
         optional: true,
@@ -56,17 +60,50 @@ class ParsedCall < ParsedBase
       }, { # )
         if: :expect_close_paren?,
         close_paren: -> { states << token }
-      }, { # { block open
+      }
+    ] + block_handler(token) + [
+    ] + chain_handler(token) + [
+      {
+        break: ->{ close_scope.handle(token) }
+      }
+    ]
+  end
+
+  def chain_handler(token)
+    [
+      {
+        optional: true,
+        dot: -> { new_scope(ParsedCall, chains) }
+      }, {
+        optional: true,
+        equal: -> { new_scope(ParsedCall, chains).handle(token) }
+      }, {
+        optional: true,
+        plus: -> { new_scope(ParsedCall, chains).handle(token) }
+      }, {
+        optional: true,
+        dash: -> { new_scope(ParsedCall, chains).handle(token) }
+      }, {
+        optional: true,
+        forward_slash: -> { new_scope(ParsedCall, chains).handle(token) }
+      }, {
+        optional: true,
+        percent: -> { new_scope(ParsedCall, chains).handle(token) }
+      }
+    ]
+  end
+
+  def block_handler(token)
+    [
+      { # { block open
         optional: true,
         open_curley: -> { new_scope(ParsedBlock, blocks) }
       }, { # do block open
         optional: true,
         do: -> { new_scope(ParsedBlock, blocks) }
-      }, { # } block close
+      }, { # } block close (passed down to parent Block)
         optional: true,
         close_curley: -> { close_scope.handle(token) }
-      }, {
-        break: ->{ close_scope.handle(token) }
       }
     ]
   end
