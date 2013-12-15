@@ -29,12 +29,8 @@ class ParsedFile < ParsedBase
     super + [
       {
         optional: true,
-        class: ->{ new_scope(ParsedClass, classes) }
-      }, {
-        optional: true,
-        module: ->{ new_scope(ParsedModule, modules) }
-      }, {
-        optional: true,
+        class: ->{ new_scope(ParsedClass, classes) },
+        module: ->{ new_scope(ParsedModule, modules) },
         word: ->{ new_scope(ParsedCall, calls).handle(token) }
       }
     ]

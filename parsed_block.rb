@@ -36,9 +36,7 @@ class ParsedBlock < ParsedBase
     [
       {
         optional: true,
-        break: ->{}
-      }, {
-        optional: true,
+        break: ->{},
         word: ->{ new_scope(ParsedCall, calls).handle(token) }
       }
     ]

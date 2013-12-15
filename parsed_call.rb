@@ -73,22 +73,12 @@ class ParsedCall < ParsedBase
     [
       {
         optional: true,
-        dot: -> { new_scope(ParsedCall, chains) }
-      }, {
-        optional: true,
-        equal: -> { new_scope(ParsedCall, chains).handle(token) }
-      }, {
-        optional: true,
-        plus: -> { new_scope(ParsedCall, chains).handle(token) }
-      }, {
-        optional: true,
-        dash: -> { new_scope(ParsedCall, chains).handle(token) }
-      }, {
-        optional: true,
-        forward_slash: -> { new_scope(ParsedCall, chains).handle(token) }
-      }, {
-        optional: true,
-        percent: -> { new_scope(ParsedCall, chains).handle(token) }
+        dot: -> { new_scope(ParsedCall, chains) },
+        equal: -> { new_scope(ParsedCall, chains).handle(token) },
+        plus: -> { new_scope(ParsedCall, chains).handle(token) },
+        dash: -> { new_scope(ParsedCall, chains).handle(token) },
+        forward_slash: -> { new_scope(ParsedCall, chains).handle(token) },
+        percent: -> { new_scope(ParsedCall, chains).handle(token) },
       }
     ]
   end
@@ -97,12 +87,8 @@ class ParsedCall < ParsedBase
     [
       { # { block open
         optional: true,
-        open_curley: -> { new_scope(ParsedBlock, blocks) }
-      }, { # do block open
-        optional: true,
-        do: -> { new_scope(ParsedBlock, blocks) }
-      }, { # } block close (passed down to parent Block)
-        optional: true,
+        open_curley: -> { new_scope(ParsedBlock, blocks) },
+        do: -> { new_scope(ParsedBlock, blocks) },
         close_curley: -> { close_scope.handle(token) }
       }
     ]

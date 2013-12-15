@@ -11,9 +11,7 @@ class ParsedMethod < ParsedBase
         break: ->{}
       }, {
         optional: true,
-        break: ->{}
-      }, {
-        optional: true,
+        break: ->{},
         word: ->{ new_scope(ParsedCall, calls).handle(token) }
       }, {
         end: ->{ close_scope }

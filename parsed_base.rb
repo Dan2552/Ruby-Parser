@@ -161,15 +161,18 @@ class ParsedBase
       return true
     end
 
+    last_expected = nil
+
     hash.each do |k, v|
       next if [:once, :optional, :if, :unless].include? k
       if token_type(token) == k
         v.call
         return true
       else
-        return k
+        last_expected = k
       end
     end
+    return last_expected
   end
 
   def debug_print(message)
