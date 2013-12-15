@@ -26,22 +26,23 @@ def file
   @file
 end
 
-string = <<-eof
-  #TODO:
-  #
-  #conditions
-  #if
-  #else
-  #elsif
-  #
-  #subclasses
+#TODO:
+#if
+#else
+#elsif
+#subclasses
+#array[0]
+#and, or, &&, ||
+#multiline operators e.g 1+\n2
 
+string = <<-eof
   chain(arg1).chained(arg2)
   assignment = assignee
   1+2
   2/3
   5-4
   6%7
+  array << shovel
 
   class MyClass
     # comment
@@ -112,6 +113,11 @@ describe "calls" do
     assert_equal(file.calls[5].name, "6")
     assert_equal(file.calls[5].chain.name, "%")
     assert_equal(file.calls[5].chain.arguments.first.name, "7")
+
+    test "shovel"
+    assert_equal(file.calls[6].name, "array")
+    assert_equal(file.calls[6].chain.name, "<<")
+    assert_equal(file.calls[6].chain.arguments.first.name, "shovel")
   end
 end
 

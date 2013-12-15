@@ -35,11 +35,32 @@ class ParsedCall < ParsedBase
       expect_close_paren?
   end
 
+  def expect_name?
+    !(history.include?(" ") || history.include?("("))
+  end
+
+  def history
+    @history ||= []
+  end
+
+  def special_name(token)
+    self.name = "#{name}#{token}"
+
+    unless ["<<"].include?(name)
+      raise "Unexpeced #{token} (invalid operator #{name})"
+    end
+  end
+
   def token_handler(token)
+    history << token
     comment_handler(token) + [
       { #name
         once: true,
         all: ->{ self.name = token }
+      }, {
+        optional: true,
+        if: :expect_name?,
+        left_chevron: ->{ special_name(token) }
       }, { # ( before args
         unless: :leading_spaces?,
         optional: true,
@@ -79,6 +100,7 @@ class ParsedCall < ParsedBase
         dash: -> { new_scope(ParsedCall, chains).handle(token) },
         forward_slash: -> { new_scope(ParsedCall, chains).handle(token) },
         percent: -> { new_scope(ParsedCall, chains).handle(token) },
+        left_chevron: -> { new_scope(ParsedCall, chains).handle(token) }
       }
     ]
   end

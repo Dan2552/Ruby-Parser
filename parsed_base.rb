@@ -201,7 +201,9 @@ class ParsedBase
       '+'  => :plus,
       '/'  => :forward_slash,
       '-'  => :dash,
-      '%'  => :percent
+      '%'  => :percent,
+      '<'  => :left_chevron,
+      '>'  => :right_chevron
     }
   end
 
