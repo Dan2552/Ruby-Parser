@@ -34,6 +34,19 @@ end
 #array[0]
 #and, or, &&, ||
 #multiline operators e.g 1+\n2
+#one.two.three\n.four
+#Namespacing::Syntax
+#simple strings
+#string interpolation, don't forget instance vars don't need {}
+#heredoc
+#a, b = 1, 2
+#hash literals
+#symbols (one: 1) in arguments
+#prioritised expressions: 3 + (1 + 2)
+#case when syntax
+#ranges a..b
+#line continuation with `\` character
+#ternary operator(?:)
 
 string = <<-eof
   chain(arg1).chained(arg2)
