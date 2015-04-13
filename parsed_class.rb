@@ -5,7 +5,7 @@ class ParsedClass < ParsedBase
     #TODO subclass
     super + [
       {
-        once: true,
+        _once: true,
         word: ->{ self.name = token }
       }, {
         _optional: true,

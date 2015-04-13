@@ -4,7 +4,7 @@ class ParsedComment < ParsedBase
   [
     {
       _optional: true,
-      except: :break,
+      _except: :break,
       all: ->{ self.name = ("#{name} #{token}").strip }
     }, {
       break: ->{ close_scope.handle(token) }

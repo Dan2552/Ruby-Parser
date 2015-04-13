@@ -55,7 +55,7 @@ class ParsedCall < ParsedBase
     history << token
     comment_handler(token) + [
       { #name
-        once: true,
+        _once: true,
         all: ->{ self.name = token }
       }, {
         _optional: true,
@@ -69,7 +69,7 @@ class ParsedCall < ParsedBase
         _optional: true,
         space: -> { states << " " }
       }, { #comma before args (must be parent's)
-        once: true,
+        _once: true,
         _optional: true,
         delimiter: ->{ close_scope.handle(token) }
       }

@@ -137,7 +137,7 @@ class ParsedBase
     debug_print "handling :#{token_type(token)} #{token.gsub("\n", "")}"
     handler ||= token_handler(token)
     handler.each_with_index do |hash, index|
-      next if hash[:once] && done_once.include?(index)
+      next if hash[:_once] && done_once.include?(index)
       done_once << index if hash[:_optional]
 
       next unless current_scope.send(hash[:_if]) if hash[:_if]
@@ -175,7 +175,7 @@ class ParsedBase
 
   def handle_instruction(token, hash)
     if hash.keys.include? :all
-      if hash[:except] == token_type(token)
+      if hash[:_except] == token_type(token)
         return "anything_but_#{token_type(token)}"
       end
       hash[:all].call
@@ -185,7 +185,7 @@ class ParsedBase
     last_expected = nil
 
     hash.each do |k, v|
-      next if [:once, :optional, :if, :unless].include? k
+      next if [:_once, :_optional, :_if, :_unless].include? k
       if token_type(token) == k
         v.call
         return true

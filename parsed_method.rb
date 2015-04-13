@@ -4,10 +4,10 @@ class ParsedMethod < ParsedBase
   def token_handler(token)
     super + [
       {
-        once: true,
+        _once: true,
         word: ->{ self.name = token }
       }, {
-        once: true,
+        _once: true,
         break: ->{}
       }, {
         _optional: true,

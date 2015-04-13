@@ -4,7 +4,7 @@ class ParsedModule < ParsedBase
   def token_handler(token)
     super + [
       {
-        once: true,
+        _once: true,
         word: ->{ self.name = token }
       }, {
         _optional: true,
