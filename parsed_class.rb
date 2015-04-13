@@ -8,7 +8,7 @@ class ParsedClass < ParsedBase
         once: true,
         word: ->{ self.name = token }
       }, {
-        optional: true,
+        _optional: true,
         break: ->{},
         def: ->{ new_scope(ParsedMethod, defined_methods) },
         word: ->{ new_scope(ParsedCall, calls).handle(token) }

@@ -10,7 +10,7 @@ class ParsedMethod < ParsedBase
         once: true,
         break: ->{}
       }, {
-        optional: true,
+        _optional: true,
         break: ->{},
         word: ->{ new_scope(ParsedCall, calls).handle(token) }
       }, {

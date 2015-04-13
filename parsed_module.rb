@@ -7,7 +7,7 @@ class ParsedModule < ParsedBase
         once: true,
         word: ->{ self.name = token }
       }, {
-        optional: true,
+        _optional: true,
         class: ->{ new_scope(ParsedClass, classes) },
         module: ->{ new_scope(ParsedModule, modules) },
         word: ->{ new_scope(ParsedCall, calls).handle(token) },

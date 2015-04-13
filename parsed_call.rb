@@ -58,28 +58,28 @@ class ParsedCall < ParsedBase
         once: true,
         all: ->{ self.name = token }
       }, {
-        optional: true,
-        if: :expect_name?,
+        _optional: true,
+        _if: :expect_name?,
         left_chevron: ->{ special_name(token) }
       }, { # ( before args
-        unless: :leading_spaces?,
-        optional: true,
+        _unless: :leading_spaces?,
+        _optional: true,
         open_paren: -> { states << token }
       }, { #need to catch space before args
-        optional: true,
+        _optional: true,
         space: -> { states << " " }
       }, { #comma before args (must be parent's)
         once: true,
-        optional: true,
+        _optional: true,
         delimiter: ->{ close_scope.handle(token) }
       }
     ] + argument_handler(token) + [
       { #if we don't expect a ) but get one
-        unless: :expect_close_paren?,
-        optional: true,
+        _unless: :expect_close_paren?,
+        _optional: true,
         close_paren: ->{ close_scope.handle(token) }
       }, { # )
-        if: :expect_close_paren?,
+        _if: :expect_close_paren?,
         close_paren: -> { states << token }
       }
     ] + block_handler(token) + [
@@ -93,7 +93,7 @@ class ParsedCall < ParsedBase
   def chain_handler(token)
     [
       {
-        optional: true,
+        _optional: true,
         dot: -> { new_scope(ParsedCall, chains) },
         equal: -> { new_scope(ParsedCall, chains).handle(token) },
         plus: -> { new_scope(ParsedCall, chains).handle(token) },
@@ -108,7 +108,7 @@ class ParsedCall < ParsedBase
   def block_handler(token)
     [
       { # { block open
-        optional: true,
+        _optional: true,
         open_curley: -> { new_scope(ParsedBlock, blocks) },
         do: -> { new_scope(ParsedBlock, blocks) },
         close_curley: -> { close_scope.handle(token) }
@@ -119,16 +119,16 @@ class ParsedCall < ParsedBase
   def argument_handler(token)
     [
       {
-        optional: true,
-        if: :open_for_multiline?,
+        _optional: true,
+        _if: :open_for_multiline?,
         break: -> { }
       }, { #argument
-        optional: true,
-        if: :expect_argument?,
+        _optional: true,
+        _if: :expect_argument?,
         word: ->{ new_scope(ParsedCall, arguments).handle(token) }
       }, { #comma after argument
-        optional: true,
-        if: :expect_delimiter?,
+        _optional: true,
+        _if: :expect_delimiter?,
         delimiter: ->{ states << token }
       }
     ]

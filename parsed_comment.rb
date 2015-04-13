@@ -3,7 +3,7 @@ class ParsedComment < ParsedBase
   def token_handler(token)
   [
     {
-      optional: true,
+      _optional: true,
       except: :break,
       all: ->{ self.name = ("#{name} #{token}").strip }
     }, {
