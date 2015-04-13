@@ -11,35 +11,23 @@ class ParsedBlock < ParsedBase
     expect_pipe?
   end
 
-  def token_handler(token)
-    super + [
-      {
-        _optional: true,
-        pipe: -> { states << token }
-      }
-    ] + definition_argument_list(token) + [
-      {
-        _if: :expect_pipe?,
-        pipe: -> { states << token }
-      }
-    ] + call_list(token) + [
-      {
-        _optional: true,
-        close_curley: ->{ close_scope }
-      }, {
-        end: -> { close_scope }
-      }
-    ]
+  def handlers
+    optional :pipe, -> { states << token }
+
+    definition_argument_list
+
+    required :pipe, -> { states << token },
+      if: :expect_pipe?
+
+    call_list
+
+    optional :close_curley, ->{ close_scope }
+    required :end, ->{ close_scope }
   end
 
-  def call_list(token)
-    [
-      {
-        _optional: true,
-        break: ->{},
-        word: ->{ new_scope(ParsedCall, calls).handle(token) }
-      }
-    ]
+  def call_list
+    optional :break
+    optional :word, ->{ new_scope(ParsedCall, calls).handle(token) }
   end
 
 end

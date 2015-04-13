@@ -1,15 +1,6 @@
 class ParsedComment < ParsedBase
-
-  def token_handler(token)
-  [
-    {
-      _optional: true,
-      _except: :break,
-      all: ->{ self.name = ("#{name} #{token}").strip }
-    }, {
-      break: ->{ close_scope.handle(token) }
-    }
-  ]
+ def handlers
+    optional_all_except :break, ->{ self.name = ("#{name} #{token}").strip }
+    required :break, ->{ close_scope.handle(token) }
   end
-
 end
