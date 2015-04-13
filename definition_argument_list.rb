@@ -6,12 +6,12 @@ module DefinitionArgumentList
   def definition_argument_list(token)
     [
       {
-        unless: :expect_argument_delimiter?,
-        if: :expect_arguments?,
+        _unless: :expect_argument_delimiter?,
+        _if: :expect_arguments?,
         word: -> { arguments << token }
       }, {
-        optional: true,
-        if: :expect_argument_delimiter?,
+        _optional: true,
+        _if: :expect_argument_delimiter?,
         delimiter: -> { states << token }
       }
     ]

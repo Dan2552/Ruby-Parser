@@ -1,19 +1,24 @@
 #Run in irb with
 #require File.expand_path(Dir.pwd) + "/test.rb"
 
+time = Time.now
 Dir[File.expand_path(Dir.pwd) + "**/*.rb"].each { |file| require file }
 
 @print_level = 1
 
+def log *arg
+  #puts *arg
+end
+
 def describe name, &blk
-  puts "#{"  " * @print_level}#{name} -->"
+  log "#{"  " * @print_level}#{name} -->"
   @print_level = @print_level + 1
   blk.call
   @print_level = @print_level - 1
 end
 
 def test name
-  puts "#{"  " * @print_level}#{name}"
+  log "#{"  " * @print_level}#{name}"
 end
 
 def assert_equal value, expect
@@ -35,6 +40,7 @@ end
 #and, or, &&, ||
 #multiline operators e.g 1+\n2
 #one.two.three\n.four
+#1+\n2
 #Namespacing::Syntax
 #simple strings
 #string interpolation, don't forget instance vars don't need {}
@@ -47,6 +53,9 @@ end
 #ranges a..b
 #line continuation with `\` character
 #ternary operator(?:)
+#method calls on string literals
+#method calls on array literals
+#method calls on number literals
 
 string = <<-eof
   chain(arg1).chained(arg2)
@@ -56,6 +65,7 @@ string = <<-eof
   5-4
   6%7
   array << shovel
+  1 + 2
 
   class MyClass
     # comment
@@ -131,6 +141,11 @@ describe "calls" do
     assert_equal(file.calls[6].name, "array")
     assert_equal(file.calls[6].chain.name, "<<")
     assert_equal(file.calls[6].chain.arguments.first.name, "shovel")
+
+    test "spacing"
+    assert_equal(file.calls[7].name, "1")
+    assert_equal(file.calls[7].chain.name, "+")
+    assert_equal(file.calls[7].chain.arguments.first.name, "2")
   end
 end
 
@@ -245,5 +260,6 @@ describe "module" do
   assert_equal(myModule.calls[0].arguments[0].name, "arg1")
 end
 
-puts "Success!"
+puts "Success! 👍"
+puts (Time.now - time)
 exit

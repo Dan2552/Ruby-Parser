@@ -49,8 +49,30 @@ class ParsedBase
   ]
 
   def initialize(parent)
-    raise "#{self.class} requires a parent" unless parent
-    @parent = parent
+    if parent.is_a? String
+      parse_string(parent)
+    else
+      raise "#{self.class} requires a parent" unless parent
+      @parent = parent
+    end
+  end
+
+  def parse_string str
+    @current_token = ""
+    str.each_char do |c|
+      if named_tokens.keys.include? c
+        send_token_to_scope
+        send_token_to_scope(c)
+      else
+        self.current_token = current_token + c
+      end
+    end
+  end
+
+  def send_token_to_scope(token=current_token)
+    return if token.length == 0
+    current_scope.handle(token)
+    self.current_token = ""
   end
 
   def parent
@@ -66,7 +88,6 @@ class ParsedBase
   end
 
   def current_scope= new_scope
-    #puts "Scope: #{new_scope}"
     if parent
       parent.current_scope = new_scope
     else
@@ -117,17 +138,17 @@ class ParsedBase
     handler ||= token_handler(token)
     handler.each_with_index do |hash, index|
       next if hash[:once] && done_once.include?(index)
-      done_once << index if hash[:optional]
+      done_once << index if hash[:_optional]
 
-      next unless current_scope.send(hash[:if]) if hash[:if]
-      next if current_scope.send(hash[:unless]) if hash[:unless]
+      next unless current_scope.send(hash[:_if]) if hash[:_if]
+      next if current_scope.send(hash[:_unless]) if hash[:_unless]
 
       was_handled = handle_instruction(token, hash)
       if was_handled == true
         done_once << index
         return
       else
-        unless hash.keys.include? :optional
+        unless hash.keys.include? :_optional
           raise "Token expected :#{was_handled}, got :#{token_type(token)} #{token.gsub("\n", "")}"
         end
       end
@@ -138,7 +159,7 @@ class ParsedBase
     [
       {
         hash: -> { new_scope(ParsedComment) },
-        optional: true
+        _optional: true
       }
     ]
   end
@@ -147,7 +168,7 @@ class ParsedBase
     comment_handler(token) + [
       {
         space: ->{},
-        optional: true
+        _optional: true
       }
     ]
   end
@@ -234,5 +255,9 @@ class ParsedBase
   def states
     @states ||= []
   end
+
+  private
+
+  attr_accessor :current_token
 
 end

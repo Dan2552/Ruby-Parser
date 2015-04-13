@@ -14,17 +14,17 @@ class ParsedBlock < ParsedBase
   def token_handler(token)
     super + [
       {
-        optional: true,
+        _optional: true,
         pipe: -> { states << token }
       }
     ] + definition_argument_list(token) + [
       {
-        if: :expect_pipe?,
+        _if: :expect_pipe?,
         pipe: -> { states << token }
       }
     ] + call_list(token) + [
       {
-        optional: true,
+        _optional: true,
         close_curley: ->{ close_scope }
       }, {
         end: -> { close_scope }
@@ -35,7 +35,7 @@ class ParsedBlock < ParsedBase
   def call_list(token)
     [
       {
-        optional: true,
+        _optional: true,
         break: ->{},
         word: ->{ new_scope(ParsedCall, calls).handle(token) }
       }
