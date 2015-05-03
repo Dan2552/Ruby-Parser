@@ -68,6 +68,7 @@ string = <<-eof
   6%7
   array << shovel
   1 + 2
+  13253 + 23532
 
   class MyClass
     # comment
@@ -148,6 +149,11 @@ describe "calls" do
     assert_equal(file.calls[7].name, "1")
     assert_equal(file.calls[7].chain.name, "+")
     assert_equal(file.calls[7].chain.arguments.first.name, "2")
+
+    test "multichar numbers"
+    assert_equal(file.calls[8].name, "13253")
+    assert_equal(file.calls[8].chain.name, "+")
+    assert_equal(file.calls[8].chain.arguments.first.name, "23532")
   end
 end
 
