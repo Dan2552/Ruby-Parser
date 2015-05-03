@@ -1,5 +1,5 @@
 class ParsedBase
-
+  include DSL
   attr_accessor :name
   attr_reader :parent
 
@@ -149,28 +149,10 @@ class ParsedBase
         return
       else
         unless hash.keys.include? :_optional
-          raise "Token expected :#{was_handled}, got :#{token_type(token)} #{token.gsub("\n", "")}"
+          raise "#{self.class} - Token expected :#{was_handled}, got :#{token_type(token)} #{token.gsub("\n", "")}"
         end
       end
     end
-  end
-
-  def comment_handler(token)
-    [
-      {
-        hash: -> { new_scope(ParsedComment) },
-        _optional: true
-      }
-    ]
-  end
-
-  def token_handler(token)
-    comment_handler(token) + [
-      {
-        space: ->{},
-        _optional: true
-      }
-    ]
   end
 
   def handle_instruction(token, hash)
@@ -250,6 +232,10 @@ class ParsedBase
         end
       end
     end
+  end
+
+  def inspect
+    self.class.to_s
   end
 
   def states

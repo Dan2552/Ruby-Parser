@@ -7,7 +7,7 @@ Dir[File.expand_path(Dir.pwd) + "**/*.rb"].each { |file| require file }
 @print_level = 1
 
 def log *arg
-  #puts *arg
+  puts *arg
 end
 
 def describe name, &blk
@@ -23,7 +23,7 @@ end
 
 def assert_equal value, expect
   unless expect == value
-    raise "FailedAssertion: #{expect} expected, got #{value}"
+    raise "TEST FAILURE: #{expect} expected, got #{value}"
   end
 end
 

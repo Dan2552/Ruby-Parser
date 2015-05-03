@@ -3,18 +3,12 @@ module DefinitionArgumentList
   # method definition: def my_method(***arg1, arg2, arg3***)
   # block definition: { |***arg1, arg2***| blah }
 
-  def definition_argument_list(token)
-    [
-      {
-        _unless: :expect_argument_delimiter?,
-        _if: :expect_arguments?,
-        word: -> { arguments << token }
-      }, {
-        _optional: true,
-        _if: :expect_argument_delimiter?,
-        delimiter: -> { states << token }
-      }
-    ]
+  def definition_argument_list
+    required :word, -> { arguments << token },
+      if: :expect_arguments?,
+      unless: :expect_argument_delimiter?
+    optional :delimiter, -> { states << token },
+      if: :expect_argument_delimiter?
   end
 
   def expect_argument_delimiter?
