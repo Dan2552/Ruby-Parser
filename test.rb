@@ -1,3 +1,5 @@
+#!/usr/bin/env ruby
+
 #Run in irb with
 #require File.expand_path(Dir.pwd) + "/test.rb"
 
